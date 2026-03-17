@@ -44,6 +44,7 @@ Output:
 ---
 
 ## 📂 Project Structure
+
 ## 🤖 ML Job Ranking
 
 The system uses TF-IDF + Logistic Regression to rank jobs based on relevance.
@@ -56,3 +57,6 @@ The system uses TF-IDF + Logistic Regression to rank jobs based on relevance.
 | Barclays | SWE, Data | Bengaluru | 0.85 |
 
 Higher score = more relevant job
+## 📸 Output
+
+![Output](assets/output.png)
