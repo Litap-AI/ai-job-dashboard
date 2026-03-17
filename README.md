@@ -44,3 +44,15 @@ Output:
 ---
 
 ## 📂 Project Structure
+## 🤖 ML Job Ranking
+
+The system uses TF-IDF + Logistic Regression to rank jobs based on relevance.
+
+### Example Output:
+
+| Company | Role | Location | Score |
+|--------|------|---------|------|
+| Procter & Gamble | Ops, Data | Mumbai | 0.88 |
+| Barclays | SWE, Data | Bengaluru | 0.85 |
+
+Higher score = more relevant job
