@@ -1,12 +1,12 @@
 ai-job-dashboard/
 │
 ├── data/
-│   └── jobs.pdf   ✅ real file
+│   └── jobs.pdf
 │
 ├── src/
-│   └── extract.py ✅ real code
+│   └── extract.py
 │
 ├── output/
-│   └── jobs.csv   ✅ placeholder
+│   └── jobs.csv
 │
 └── README.md
