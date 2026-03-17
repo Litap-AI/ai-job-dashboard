@@ -1,78 +1,90 @@
 import streamlit as st
 import pandas as pd
-import os
+import PyPDF2
 
-from filter import filter_jobs
-from model import rank_jobs
+from src.filter import filter_jobs
+from src.model import rank_jobs, rank_jobs_with_resume
 
 # --- Page Config ---
-st.set_page_config(page_title="AI Job Dashboard", page_icon="🚀", layout="wide")
+st.set_page_config(page_title="AI Job Recommender", layout="wide")
+
+# --- Load Data ---
+@st.cache_data
+def load_data():
+    return pd.read_csv("output/jobs.csv")
+
+df = load_data()
 
 # --- Title ---
 st.title("🚀 AI Job Recommender")
-st.subheader("Find the best jobs tailored to you")
-
-st.markdown("---")
-
-# --- Load Data ---
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-file_path = os.path.join(BASE_DIR, "output", "jobs.csv")
-
-df = pd.read_csv(file_path)
-df.fillna("", inplace=True)
+st.write("Find the best jobs tailored to you")
 
 # --- Sidebar Filters ---
-st.sidebar.header("🔍 Filter Options")
+st.sidebar.header("🔎 Filter Options")
 
 location = st.sidebar.selectbox(
     "Select Location",
-    ["All", "Pune", "Bangalore", "Mumbai", "Delhi", "Chennai", "Remote"]
+    ["All"] + sorted(df["India Locations"].dropna().unique())
 )
 
 role = st.sidebar.selectbox(
     "Select Role",
-    ["All", "Data", "ML", "SWE", "Product", "DevOps", "Risk"]
+    ["All", "Data", "ML", "SWE", "AI"]
 )
 
-# --- Apply Filtering ---
-filtered = filter_jobs(df, location, role)
+# --- Resume Upload ---
+st.subheader("📄 Upload Resume (PDF)")
+uploaded_file = st.file_uploader("Upload your resume", type=["pdf"])
 
-st.markdown("## 📋 Filtered Jobs")
-st.write(f"Total jobs found: **{len(filtered)}**")
+# --- Resume Text Extraction ---
+def extract_resume_text(uploaded_file):
+    text = ""
+    pdf_reader = PyPDF2.PdfReader(uploaded_file)
 
-# --- Clickable Links ---
-def make_clickable(link):
-    return f"[Apply Here]({link})"
+    for page in pdf_reader.pages:
+        content = page.extract_text()
+        if content:
+            text += content
 
-if len(filtered) > 0:
-    filtered_display = filtered.copy()
-    filtered_display["Application Link"] = filtered_display["Application Link"].apply(make_clickable)
+    return text
 
-    st.markdown(filtered_display.to_markdown(index=False), unsafe_allow_html=True)
+# --- Process Data ---
+if uploaded_file is not None:
+    st.success("Resume uploaded successfully ✅")
 
-    st.markdown("---")
+    resume_text = extract_resume_text(uploaded_file)
 
-    # --- Ranking ---
-    top_jobs = rank_jobs(filtered, location, role)
-
-    # --- Top Recommendation ---
-    st.markdown("## 🔥 Top Recommendation")
-
-    top_job = top_jobs.iloc[0]
-
-    st.success(f"""
-    **{top_job['Company']}**
-
-    📌 Role: {top_job['Roles Open (typical)']}  
-    📍 Location: {top_job['India Locations']}  
-    🔗 [Apply Here]({top_job['Application Link']})
-    """)
-
-    st.markdown("---")
-
-    # --- Ranked Table ---
-    st.markdown("## 📊 Ranked Jobs")
-    st.dataframe(top_jobs.reset_index(drop=True))
+    ranked_df = rank_jobs_with_resume(df, resume_text)
 
 else:
-    st.warning("No jobs found for selected filters.")
+    filtered_df = filter_jobs(df, location, role)
+    ranked_df = rank_jobs(filtered_df, location, role)
+
+# --- Filtered Jobs ---
+st.subheader("📋 Filtered Jobs")
+
+if uploaded_file is None:
+    st.write(f"Total jobs found: {len(filtered_df)}")
+    st.dataframe(filtered_df.head(10))
+else:
+    st.write("Showing jobs ranked based on your resume")
+
+# --- Ranked Jobs ---
+st.subheader("🔥 Ranked Jobs")
+
+st.dataframe(ranked_df.head(10))
+
+# --- Top Recommendation ---
+st.subheader("🌟 Top Recommendation")
+
+top_job = ranked_df.iloc[0]
+
+st.success(f"🏢 {top_job['Company']}")
+
+st.write(f"📌 Role: {top_job['Roles Open (typical)']}")
+st.write(f"📍 Location: {top_job['India Locations']}")
+
+if "Application Link" in top_job:
+    st.markdown(f"[🔗 Apply Here](https://{top_job['Application Link']})")
+
+st.write(f"⭐ Score: {round(top_job['score'], 3)}")
