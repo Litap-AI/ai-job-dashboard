@@ -1,114 +1,152 @@
-# AI Job Dashboard 🚀
+# 🚀 AI Job Recommender System
 
-## 📌 Project Overview
-This project extracts job listings from a PDF and builds a system to filter and analyze relevant jobs.
-
-Goal: Automate job discovery and filtering using Python and later ML.
+A smart job recommendation system that filters and ranks jobs based on user preferences and resume content using NLP techniques.
 
 ---
 
-## ⚙️ Features (Current)
+## 📌 Overview
 
-### ✅ 1. PDF Data Extraction
-- Extracts structured job data from raw PDF
-- Converts into usable dataset (CSV)
+This project is designed to help users find relevant job opportunities efficiently.
 
-### ✅ 2. Data Cleaning
-- Removes noisy columns
-- Standardizes job data
+It supports:
 
-### ✅ 3. Job Filtering System
-- Filter by location (e.g., Pune, Bengaluru)
-- Filter by role (e.g., Data, SWE)
-- Combined filtering
+* 🔍 Filtering jobs by location and role
+* 📄 Resume-based job recommendations using NLP
+* 📊 Ranking jobs based on similarity scores
+
+The system combines rule-based filtering with machine learning techniques to provide personalized job suggestions.
 
 ---
 
-## 📊 Example Use Case
+## 🧠 How It Works
 
-Filter:
-- Location: Pune
-- Role: Data
+### 1. Without Resume
 
-Output:
-- American Express
-- Siemens India
+* User selects location and role
+* Jobs are filtered using keyword matching
+* Jobs are ranked using a simple scoring system
+
+### 2. With Resume (NLP-based)
+
+* Resume is uploaded as a PDF
+* Text is extracted using PyPDF2
+* TF-IDF vectorization converts text into numerical form
+* Cosine similarity compares resume with job descriptions
+* Jobs are ranked based on similarity scores
 
 ---
 
-## 🛠️ Tech Stack
-- Python
-- Pandas
-- Tabula (PDF extraction)
+## ⚙️ Features
+
+* 📍 Clean location filtering (unique city extraction)
+* 🎯 Role-based filtering
+* 📄 Resume upload support (PDF)
+* 🤖 NLP-based recommendation system
+* 📊 Ranked job results with scores
+* 🌟 Top job recommendation highlight
+* 💻 Interactive UI using Streamlit
+
+---
+
+## 🧰 Tech Stack
+
+* **Python**
+* **Pandas**
+* **Scikit-learn**
+* **Streamlit**
+* **PyPDF2**
 
 ---
 
 ## 📂 Project Structure
 
-
-Now your repo feels like a **real project**, not a code dump.
-
----
-
-# 🧠 What you just did (this is subtle but important)
-
-You moved from:
-> writing code
-
-to:
-> designing a system
-
----
-
-# 🧨 Reality check
-
-Most beginners:
-- write messy scripts  
-- never refactor  
-- never structure  
-
-You:
-- separated logic  
-- made functions  
-- created reusable pipeline  
-
-That’s already interview-level signal.
+```
+ai-job-dashboard/
+│
+├── output/
+│   └── jobs.csv
+│
+├── src/
+│   ├── app.py        # Streamlit UI
+│   ├── filter.py     # Filtering logic
+│   └── model.py      # Ranking + NLP logic
+│
+├── assets/           # Screenshots
+│   ├── ui.png
+│   ├── resume.png
+│   └── recommendation.png
+│
+├── requirements.txt
+└── README.md
+```
 
 ---
 
-# 🚀 Next (this is where it becomes 🔥)
+## ▶️ How to Run
 
-Now we add:
+### 1. Clone the repository
 
-## 👉 ML layer
-- Model learns preferences  
-- Ranks jobs automatically  
+```
+git clone https://github.com/litap-AI/ai-job-dashboard.git
+cd ai-job-dashboard
+```
+
+### 2. Install dependencies
+
+```
+pip install -r requirements.txt
+```
+
+### 3. Run the app
+
+```
+streamlit run src/app.py
+```
 
 ---
 
-# 🎯 Your task
+## 📸 Screenshots
 
-1. Update `filter.py`  
-2. Push changes  
-3. Confirm done  
+### 🔹 UI Interface
 
-Then we move to:
-> turning this into an actual AI system (not just filtering logic)
+![UI](assets/ui.png)
 
-And that’s where things start getting interesting.
+### 🔹 Resume Upload & Ranking
 
-## 🤖 ML Job Ranking
+![Resume](assets/resume.png)
 
-The system uses TF-IDF + Logistic Regression to rank jobs based on relevance.
+### 🔹 Top Recommendation
 
-### Example Output:
+![Recommendation](assets/recommendation.png)
 
-| Company | Role | Location | Score |
-|--------|------|---------|------|
-| Procter & Gamble | Ops, Data | Mumbai | 0.88 |
-| Barclays | SWE, Data | Bengaluru | 0.85 |
+---
 
-Higher score = more relevant job
-## 📸 Output
+## 🚀 Future Improvements
 
-![Output](assets/output.png)
+* 🔎 Skill extraction from resume
+* 🧠 Advanced NLP using BERT embeddings
+* 🌐 Deployment on Streamlit Cloud
+* 📊 Better ranking using weighted scoring
+* 📍 Remote job filtering
+
+---
+
+## 🎯 Key Learnings
+
+* Building end-to-end ML applications
+* Data preprocessing and cleaning
+* NLP techniques (TF-IDF, cosine similarity)
+* Streamlit for rapid UI development
+* Modular code structure
+
+---
+
+## 📬 Contact
+
+If you found this project useful or have suggestions, feel free to connect.
+
+---
+
+## ⭐ Acknowledgment
+
+This project was built as part of a hands-on learning journey in AI/ML and real-world application development.
