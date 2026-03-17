@@ -21,9 +21,23 @@ st.write("Find the best jobs tailored to you")
 # --- Sidebar Filters ---
 st.sidebar.header("🔎 Filter Options")
 
+def extract_unique_locations(df):
+    locations = set()
+
+    for loc in df["India Locations"].dropna():
+        parts = loc.split(",")
+        for p in parts:
+            clean = p.strip().split("(")[0].strip()
+            locations.add(clean)
+
+    return sorted(locations)
+
+
+unique_locations = extract_unique_locations(df)
+
 location = st.sidebar.selectbox(
     "Select Location",
-    ["All"] + sorted(df["India Locations"].dropna().unique())
+    ["All"] + unique_locations
 )
 
 role = st.sidebar.selectbox(
