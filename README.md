@@ -1,2 +1,12 @@
-# ai-job-dashboard
-Its AI Job dashboard
+ai-job-dashboard/
+│
+├── data/
+│   └── jobs.pdf   ✅ real file
+│
+├── src/
+│   └── extract.py ✅ real code
+│
+├── output/
+│   └── jobs.csv   ✅ placeholder
+│
+└── README.md
