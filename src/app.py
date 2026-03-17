@@ -1,8 +1,11 @@
 import streamlit as st
 import pandas as pd
+import os
 
-# Load data
-df = pd.read_csv("output/jobs.csv")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+file_path = os.path.join(BASE_DIR, "output", "jobs.csv")
+
+df = pd.read_csv(file_path)
 
 # Title
 st.title("AI Job Dashboard 🚀")
