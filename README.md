@@ -109,15 +109,15 @@ streamlit run src/app.py
 
 ### 🔹 UI Interface
 
-![UI](assets/ui.png)
+![UI](assets/UI.png)
 
 ### 🔹 Resume Upload & Ranking
 
-![Resume](assets/resume.png)
+![Resume](assets/Resume.png)
 
 ### 🔹 Top Recommendation
 
-![Recommendation](assets/recommendation.png)
+![Recommendation](assets/Recommendation.png)
 
 ---
 
