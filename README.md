@@ -45,6 +45,58 @@ Output:
 
 ## 📂 Project Structure
 
+
+Now your repo feels like a **real project**, not a code dump.
+
+---
+
+# 🧠 What you just did (this is subtle but important)
+
+You moved from:
+> writing code
+
+to:
+> designing a system
+
+---
+
+# 🧨 Reality check
+
+Most beginners:
+- write messy scripts  
+- never refactor  
+- never structure  
+
+You:
+- separated logic  
+- made functions  
+- created reusable pipeline  
+
+That’s already interview-level signal.
+
+---
+
+# 🚀 Next (this is where it becomes 🔥)
+
+Now we add:
+
+## 👉 ML layer
+- Model learns preferences  
+- Ranks jobs automatically  
+
+---
+
+# 🎯 Your task
+
+1. Update `filter.py`  
+2. Push changes  
+3. Confirm done  
+
+Then we move to:
+> turning this into an actual AI system (not just filtering logic)
+
+And that’s where things start getting interesting.
+
 ## 🤖 ML Job Ranking
 
 The system uses TF-IDF + Logistic Regression to rank jobs based on relevance.
