@@ -1,37 +1,78 @@
+import streamlit as st
 import pandas as pd
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression
+import os
 
-# Load data
-df = pd.read_csv("output/jobs.csv")
+from filter import filter_jobs
+from model import rank_jobs
 
-# Create text feature
-df["text"] = df["Roles Open (typical)"] + " " + df["India Locations"]
+# --- Page Config ---
+st.set_page_config(page_title="AI Job Dashboard", page_icon="🚀", layout="wide")
 
-# --- STEP 1: Create labels manually ---
-# 1 = relevant, 0 = not relevant
-# For now we simulate preferences
+# --- Title ---
+st.title("🚀 AI Job Recommender")
+st.subheader("Find the best jobs tailored to you")
 
-def label_job(row):
-    if "Data" in row["Roles Open (typical)"] or "ML" in row["Roles Open (typical)"]:
-        return 1
-    return 0
+st.markdown("---")
 
-df["label"] = df.apply(label_job, axis=1)
+# --- Load Data ---
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+file_path = os.path.join(BASE_DIR, "output", "jobs.csv")
 
-# --- STEP 2: Convert text → numbers ---
-vectorizer = TfidfVectorizer()
-X = vectorizer.fit_transform(df["text"])
-y = df["label"]
+df = pd.read_csv(file_path)
+df.fillna("", inplace=True)
 
-# --- STEP 3: Train model ---
-model = LogisticRegression()
-model.fit(X, y)
+# --- Sidebar Filters ---
+st.sidebar.header("🔍 Filter Options")
 
-# --- STEP 4: Predict relevance ---
-df["score"] = model.predict_proba(X)[:, 1]
+location = st.sidebar.selectbox(
+    "Select Location",
+    ["All", "Pune", "Bangalore", "Mumbai", "Delhi", "Chennai", "Remote"]
+)
 
-# --- STEP 5: Sort best jobs ---
-top_jobs = df.sort_values(by="score", ascending=False)
+role = st.sidebar.selectbox(
+    "Select Role",
+    ["All", "Data", "ML", "SWE", "Product", "DevOps", "Risk"]
+)
 
-print(top_jobs[["Company", "Roles Open (typical)", "India Locations", "score"]].head(10))
+# --- Apply Filtering ---
+filtered = filter_jobs(df, location, role)
+
+st.markdown("## 📋 Filtered Jobs")
+st.write(f"Total jobs found: **{len(filtered)}**")
+
+# --- Clickable Links ---
+def make_clickable(link):
+    return f"[Apply Here]({link})"
+
+if len(filtered) > 0:
+    filtered_display = filtered.copy()
+    filtered_display["Application Link"] = filtered_display["Application Link"].apply(make_clickable)
+
+    st.markdown(filtered_display.to_markdown(index=False), unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    # --- Ranking ---
+    top_jobs = rank_jobs(filtered, location, role)
+
+    # --- Top Recommendation ---
+    st.markdown("## 🔥 Top Recommendation")
+
+    top_job = top_jobs.iloc[0]
+
+    st.success(f"""
+    **{top_job['Company']}**
+
+    📌 Role: {top_job['Roles Open (typical)']}  
+    📍 Location: {top_job['India Locations']}  
+    🔗 [Apply Here]({top_job['Application Link']})
+    """)
+
+    st.markdown("---")
+
+    # --- Ranked Table ---
+    st.markdown("## 📊 Ranked Jobs")
+    st.dataframe(top_jobs.reset_index(drop=True))
+
+else:
+    st.warning("No jobs found for selected filters.")
