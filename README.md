@@ -3,10 +3,10 @@ ai-job-dashboard/
 ├── data/
 │   └── jobs.pdf
 │
-├── src/
-│   └── extract.py
-│
 ├── output/
 │   └── jobs.csv
+│
+├── src/
+│   └── extract.py
 │
 └── README.md
