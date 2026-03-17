@@ -2,42 +2,100 @@ import streamlit as st
 import pandas as pd
 import os
 
+# --- Page Config ---
+st.set_page_config(page_title="AI Job Dashboard", page_icon="🚀", layout="wide")
+
+# --- Title ---
+st.title("🚀 AI Job Recommender")
+st.subheader("Find the best jobs tailored to you")
+
+st.markdown("---")
+
+# --- Load Data (robust path handling) ---
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 file_path = os.path.join(BASE_DIR, "output", "jobs.csv")
 
 df = pd.read_csv(file_path)
 
-# Title
-st.title("AI Job Dashboard 🚀")
+# --- Clean Data ---
+df.fillna("", inplace=True)
 
-# User inputs
-location = st.text_input("Enter Location (e.g., Pune, Bengaluru)")
-role = st.text_input("Enter Role (e.g., Data, ML, SWE)")
+# --- Sidebar Filters ---
+st.sidebar.header("🔍 Filter Options")
 
-# Filter button
-if st.button("Find Jobs"):
+location = st.sidebar.selectbox(
+    "Select Location",
+    ["All", "Pune", "Bangalore", "Mumbai", "Delhi", "Chennai", "Remote"]
+)
 
-    filtered = df.copy()
+role = st.sidebar.selectbox(
+    "Select Role",
+    ["All", "Data", "ML", "SWE", "Product", "DevOps", "Risk"]
+)
 
-    if location:
-        filtered = filtered[
-            filtered["India Locations"].str.contains(location, case=False, na=False)
-        ]
+# --- Filtering Logic ---
+filtered = df.copy()
 
-    if role:
-        filtered = filtered[
-            filtered["Roles Open (typical)"].str.contains(role, case=False, na=False)
-        ]
+if location != "All":
+    filtered = filtered[
+        filtered["India Locations"].str.contains(location, case=False, na=False)
+    ]
 
-    st.subheader("Filtered Jobs")
-    st.write(filtered)
+if role != "All":
+    filtered = filtered[
+        filtered["Roles Open (typical)"].str.contains(role, case=False, na=False)
+    ]
 
-    # Simple ranking (reuse logic)
-    filtered["score"] = filtered["Roles Open (typical)"].apply(
-        lambda x: 1 if "Data" in x or "ML" in x else 0
-    )
+# --- Show Filtered Jobs ---
+st.markdown("## 📋 Filtered Jobs")
 
-    ranked = filtered.sort_values(by="score", ascending=False)
+st.write(f"Total jobs found: **{len(filtered)}**")
 
-    st.subheader("Ranked Jobs")
-    st.write(ranked)
+# --- Make links clickable ---
+filtered["Application Link"] = filtered["Application Link"].apply(
+    lambda x: f"[Apply Here]({x})"
+)
+
+st.markdown(filtered.to_markdown(index=False), unsafe_allow_html=True)
+
+st.markdown("---")
+
+# --- Ranking (simple relevance scoring) ---
+def calculate_score(row):
+    score = 0
+
+    if location != "All" and location.lower() in row["India Locations"].lower():
+        score += 1
+
+    if role != "All" and role.lower() in row["Roles Open (typical)"].lower():
+        score += 1
+
+    return score
+
+
+if len(filtered) > 0:
+    filtered["score"] = filtered.apply(calculate_score, axis=1)
+    top_jobs = filtered.sort_values(by="score", ascending=False)
+
+    # --- Top Recommendation ---
+    st.markdown("## 🔥 Top Recommendation")
+
+    top_job = top_jobs.iloc[0]
+
+    st.success(f"""
+    **{top_job['Company']}**
+    
+    📌 Role: {top_job['Roles Open (typical)']}  
+    📍 Location: {top_job['India Locations']}  
+    🔗 [Apply Here]({top_job['Application Link'].split('(')[-1][:-1]})
+    """)
+
+    st.markdown("---")
+
+    # --- Ranked Jobs Table ---
+    st.markdown("## 📊 Ranked Jobs")
+
+    st.dataframe(top_jobs.reset_index(drop=True))
+
+else:
+    st.warning("No jobs found for selected filters.")
