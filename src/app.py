@@ -2,9 +2,8 @@ import streamlit as st
 import pandas as pd
 import PyPDF2
 
-from src.filter import filter_jobs
-from src.model import rank_jobs, rank_jobs_with_resume
-
+from filter import filter_jobs
+from model import rank_jobs, rank_jobs_with_resume
 # --- Page Config ---
 st.set_page_config(page_title="AI Job Recommender", layout="wide")
 
